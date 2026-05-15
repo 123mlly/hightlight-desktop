@@ -1,0 +1,388 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #e8eaed;
+  background: #0f1115;
+  line-height: 1.45;
+}
+
+body {
+  margin: 0;
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #222733;
+  background: #12151c;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.subtitle {
+  margin: 0;
+  color: #9aa3b2;
+  font-size: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  padding: 0 1.5rem 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.panel {
+  border: 1px solid #222733;
+  border-radius: 10px;
+  padding: 1rem 1rem 1.25rem;
+  background: #12151c;
+  min-width: 0;
+}
+
+.panel:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+h3 {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* 有副标题的项更高；底部对齐使同一行里的数字输入框齐平 */
+.row.options-row {
+  align-items: flex-end;
+}
+
+.row.wrap label {
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.options-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  align-items: stretch;
+}
+
+.field-hint {
+  font-size: 0.72rem;
+  color: #7d8696;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="number"] {
+  background: #0f1115;
+  border: 1px solid #2a3142;
+  color: #e8eaed;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  background: #2b6cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button#btn-clear-search {
+  background: #2a3142;
+}
+
+.muted {
+  color: #9aa3b2;
+  font-size: 0.88rem;
+}
+
+.small-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.library,
+.segments {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  max-height: 280px;
+  overflow: auto;
+  overflow-x: hidden;
+  border: 1px solid #222733;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.library li,
+.segments li {
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid #1c2230;
+  cursor: default;
+}
+
+.library li:not(.library-empty) {
+  cursor: pointer;
+}
+
+.library li .lib-check {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.library li .lib-title {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library li:hover,
+.segments li:hover {
+  background: #171b26;
+}
+
+.library li .lib-title:hover {
+  color: #c5cad3;
+}
+
+.library li.active {
+  outline: none;
+  background: rgba(43, 108, 255, 0.14);
+  box-shadow: inset 3px 0 0 #2b6cff;
+}
+
+.segments li {
+  cursor: default;
+  font-size: 0.85rem;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.88rem;
+}
+
+.progress {
+  margin-top: 0.75rem;
+}
+
+.progress.hidden {
+  display: none;
+}
+
+.bar {
+  height: 8px;
+  background: #1c2230;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar .inner {
+  height: 100%;
+  width: 0%;
+  background: #2b6cff;
+  transition: width 0.2s ease;
+}
+
+#search {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+}
+
+label.grow {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.meta-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.5rem 0.75rem;
+  align-items: end;
+  margin-bottom: 0.6rem;
+  min-width: 0;
+}
+
+.meta-row label.grow {
+  flex: unset;
+  min-width: 0;
+}
+
+.meta-row label.grow input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.meta-row #btn-save-meta {
+  white-space: nowrap;
+  margin-bottom: 0.05rem;
+}
+
+@media (max-width: 720px) {
+  .meta-row {
+    grid-template-columns: 1fr;
+  }
+
+  .meta-row #btn-save-meta {
+    justify-self: start;
+  }
+}
+
+#btn-remove {
+  background: #8b3a3a;
+}
+
+#btn-compile-reel {
+  background: #2d6a4f;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.path-display {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.actions-row {
+  gap: 0.65rem;
+}
+
+.btn-primary {
+  min-width: 7rem;
+}
+
+.btn-primary[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: #3a4559;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #4a5569;
+}
+
+.library li.library-empty {
+  cursor: default;
+  color: #7d8696;
+  font-size: 0.88rem;
+  justify-content: center;
+  padding: 1.25rem 0.75rem;
+}
+
+.library li.library-empty:hover {
+  background: transparent;
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  opacity: 0;
+  pointer-events: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  background: #2a3142;
+  border: 1px solid #3d4a63;
+  color: #e8eaed;
+  font-size: 0.88rem;
+  font-weight: 500;
+  z-index: 1000;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+  max-width: min(90vw, 420px);
+  text-align: center;
+}
+
+.toast.toast-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.kbd-hint kbd {
+  display: inline-block;
+  padding: 0.08rem 0.28rem;
+  margin: 0 0.1rem;
+  font-size: 0.72rem;
+  font-family: inherit;
+  background: #1c2230;
+  border: 1px solid #2a3142;
+  border-radius: 4px;
+  color: #b8c0cc;
+}
+
+.progress.analyze-pending #progress-text {
+  color: #e8eaed;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0.35rem 0 0;
+}
+
+.progress.analyze-pending .bar .inner {
+  width: 36%;
+  transition: none;
+  animation: analyzeBar 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes analyzeBar {
+  from {
+    margin-left: 0;
+  }
+  to {
+    margin-left: 64%;
+  }
+}

@@ -1,5 +1,7 @@
 # HighlightClip
 
+**Languages:** [简体中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
+
 本地视频素材库 + 关键词筛选 + 自动高光分析 + FFmpeg 导出。桌面端基于 **Electron**，界面为 **React + Vite**，主进程负责分析、编码与文件对话框；渲染进程通过 **preload** 暴露的 `window.api` 与主进程通信。
 
 ## 功能概览
@@ -8,13 +10,13 @@
 - **高光分析**：可配置目标总时长、最多片段数、高光窗长（单段时长）、场景阈值、运动采样等；分析时显示进度与「正在分析」状态。
 - **导出成片**：按分析得到的候选片段拼接导出 MP4（可选响度归一、片段间交叉淡化）。
 - **多素材合成**：勾选多条素材后按列表顺序分别分析高光，再合并为一条成片。
-- **设置**：可指定自定义 `ffmpeg` / `ffprobe` 路径；留空则使用依赖内置的二进制（打包时已配置 `asarUnpack`）。
+- **设置**：可指定自定义 `ffmpeg` / `ffprobe` 路径；留空则使用依赖内置的二进制（打包时已配置 `asarUnpack`）。默认**无需**在系统里单独安装 FFmpeg。
 
 ## 环境要求
 
 - **Node.js** 18+（建议 LTS）
 - **npm** 9+
-- 开发 / 运行需本机可执行依赖中的 FFmpeg、FFprobe（`ffmpeg-static`、`@ffprobe-installer/ffprobe`）
+- 依赖中的 `ffmpeg-static`、`@ffprobe-installer/ffprobe` 会提供对应平台的二进制；开发时 `npm install` 后即可使用。
 
 ## 安装与运行
 
@@ -52,7 +54,7 @@ npm install
 
 ## 打包 macOS / Windows
 
-**说明**：`electron-builder` 在**本机默认只打当前操作系统**的安装包（例如在 mac 上执行 `npm run dist` 只会得到 mac 产物）。要同时拿到 **mac + win** 的安装包，常见做法是下面两种之一。
+**说明**：`electron-builder` 在**本机默认只打当前操作系统**的安装包（例如在 Mac 上执行 `npm run dist` 只会得到 Mac 产物）。要同时拿到 **mac + win** 的安装包，常见做法是下面两种之一。
 
 ### 1. 本机分别打包
 
@@ -80,6 +82,11 @@ npm install
 
 ## 图标与本地调试包
 
+- 应用图标：`build/icon.png`（建议 ≥1024×1024 方形 PNG）。`package.json` 的 `build.icon` 已指向该文件。
+- 修改**主进程**逻辑后需**重启 Electron** 才会生效；仅改 React 时由 `vite build --watch` 刷新即可（视启动方式而定）。
+- `npm run pack` / `pack:mac` / `pack:win`：生成未封装的应用目录，便于本地验证安装包内容。
+
+## 项目结构（简要）
 
 ```
 src/
@@ -93,7 +100,7 @@ build/            # 应用图标等 electron-builder 资源（如 icon.png）
 
 主进程入口：`dist/main/main.js`（由 `package.json` 的 `main` 指定）。窗口加载 `dist/renderer/index.html`。
 
-## 项目结构（简要）
+## 技术栈
 
 - Electron 33、TypeScript 5、React 19、Vite 5  
 - `electron-store` 持久化设置与素材库列表  

@@ -1,0 +1,15 @@
+export const IPC = {
+  LIBRARY_ADD: "library:add",
+  LIBRARY_REMOVE: "library:remove",
+  LIBRARY_LIST: "library:list",
+  LIBRARY_UPDATE_META: "library:updateMeta",
+  LIBRARY_SEARCH: "library:search",
+  ANALYZE: "analyze:run",
+  RENDER: "render:run",
+  COMPILE_REEL: "compile:reel",
+  RENDER_PROGRESS: "render:progress",
+  SETTINGS_GET: "settings:get",
+  SETTINGS_SET: "settings:set",
+  PICK_FILE: "dialog:pickVideo",
+  PICK_SAVE: "dialog:pickSave",
+} as const;
