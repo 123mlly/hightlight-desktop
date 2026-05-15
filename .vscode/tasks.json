@@ -8,6 +8,42 @@
       "label": "npm: build",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": ["$tsc"]
+    },
+    {
+      "type": "npm",
+      "script": "build:renderer",
+      "group": "build",
+      "label": "npm: build:renderer",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "dev:compile-once",
+      "label": "npm: dev:compile-once",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "type": "npm",
+      "script": "vite:dev",
+      "label": "vite: dev server",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": false },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "ready in \\d+ ms"
+        }
+      }
+    },
+    {
+      "label": "electron-dev: compile + vite",
+      "dependsOrder": "sequence",
+      "dependsOn": ["npm: dev:compile-once", "vite: dev server"]
     }
   ]
 }

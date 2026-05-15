@@ -10,7 +10,6 @@ import type {
   RenderOptions,
 } from "../shared/types";
 import { getFfprobePath, tmpDir } from "./ffmpegPaths";
-import { analyzeHighlights } from "./highlightEngine";
 import {
   libraryAdd,
   libraryList,
@@ -21,6 +20,7 @@ import {
 import { JobQueue } from "./jobQueue";
 import { ffprobeJson } from "./probe";
 import { renderHighlightReel, renderMultiSourceReel, type MultiSourceSlice } from "./renderJob";
+import { computeHighlights } from "./highlightPipeline";
 import { getSettings, setSettings } from "./settingsStore";
 
 const queue = new JobQueue();
@@ -44,7 +44,12 @@ function createWindow(): BrowserWindow {
       nodeIntegration: false,
     },
   });
-  win.loadFile(path.join(__dirname, "../renderer/index.html"));
+  const rendererUrl = process.env.ELECTRON_RENDERER_URL?.trim();
+  if (rendererUrl) {
+    void win.loadURL(rendererUrl);
+  } else {
+    win.loadFile(path.join(__dirname, "../renderer/index.html"));
+  }
   return win;
 }
 
@@ -137,7 +142,7 @@ ipcMain.handle(
   ): Promise<{ segments: HighlightSegment[]; durationSec: number }> => {
     const s = getSettings();
     const ffprobe = getFfprobePath(s.ffprobePath || undefined);
-    return analyzeHighlights(ffprobe, s.ffmpegPath || undefined, payload.inputPath, payload.options);
+    return computeHighlights(s, ffprobe, payload.inputPath, payload.options, tmpDir());
   }
 );
 
@@ -172,7 +177,7 @@ ipcMain.handle(
         message: `分析素材 ${pi + 1}/${n}`,
         percent: Math.round((pi / n) * 48),
       });
-      const { segments } = await analyzeHighlights(ffprobe, ffmpegO, p, perOpts);
+      let { segments } = await computeHighlights(s, ffprobe, p, perOpts, tmpDir());
       const probe = await ffprobeJson(ffprobe, p);
       if (segments.length > 0) {
         sources.push({ inputPath: p, segments, hasAudio: probe.hasAudio });

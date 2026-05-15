@@ -13,6 +13,11 @@ type SettingsForm = {
   xfadeSec: number;
   ffmpegPath: string;
   ffprobePath: string;
+  qwenApiKey: string;
+  qwenModel: string;
+  qwenHighlightMode: "none" | "rerank" | "audio" | "transcript";
+  qwenAudioModel: string;
+  qwenInstruction: string;
 };
 
 type ProgressUi = {
@@ -28,6 +33,15 @@ function truncateMiddle(s: string, max: number): string {
   return `${s.slice(0, head)}…${s.slice(-tail)}`;
 }
 
+function normalizeQwenMode(
+  s: Record<string, unknown>
+): "none" | "rerank" | "audio" | "transcript" {
+  const m = s.qwenHighlightMode;
+  if (m === "rerank" || m === "audio" || m === "transcript") return m;
+  if (s.qwenRerankEnabled === true) return "rerank";
+  return "none";
+}
+
 function normalizeFromApi(s: Record<string, unknown>): SettingsForm {
   return {
     targetDurationSec: Number(s.targetDurationSec) || 60,
@@ -41,6 +55,11 @@ function normalizeFromApi(s: Record<string, unknown>): SettingsForm {
     xfadeSec: Number(s.xfadeSec) || 0.45,
     ffmpegPath: String(s.ffmpegPath ?? ""),
     ffprobePath: String(s.ffprobePath ?? ""),
+    qwenApiKey: String(s.qwenApiKey ?? ""),
+    qwenModel: String(s.qwenModel ?? "qwen3.6-plus"),
+    qwenHighlightMode: normalizeQwenMode(s),
+    qwenAudioModel: String(s.qwenAudioModel ?? "qwen3-omni-flash"),
+    qwenInstruction: String(s.qwenInstruction ?? ""),
   };
 }
 
@@ -174,7 +193,13 @@ export default function App() {
           ? (sample.endSec - sample.startSec).toFixed(1)
           : "—";
       setSegmentNote(
-        `共 ${r.segments.length} 段，单段约 ${segLen}s（高光窗长 ${persisted.segmentWindowSec}s）。修改主进程逻辑后需重启应用再分析。`
+        `共 ${r.segments.length} 段，单段约 ${segLen}s（高光窗长 ${persisted.segmentWindowSec}s）。修改主进程逻辑后需重启应用再分析。${
+          persisted.qwenHighlightMode === "audio"
+            ? " 听音高光：时间相对片头 0 秒起算（当前仅截取约 2 分钟音轨送模型）。"
+            : persisted.qwenHighlightMode === "transcript"
+              ? " 字幕再选：先分块转写（最多约前 14 分钟），再由文本模型按字幕选时间段；失败则回退本地算法。"
+              : ""
+        }`
       );
       if (r.segments.length > 0) setToast("分析完成");
     } catch (e) {
@@ -731,6 +756,106 @@ export default function App() {
               placeholder="默认内置"
               value={options.ffprobePath}
               onChange={(e) => patchOptions({ ffprobePath: e.target.value })}
+            />
+          </label>
+          <h3 className="settings-sub">通义千问（阿里云百炼）</h3>
+          <p className="muted small-hint">
+            在{" "}
+            <a
+              href="https://bailian.console.aliyun.com/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              百炼控制台
+            </a>{" "}
+            创建 API Key（<code>sk-…</code>）。应用通过百炼提供的 OpenAI 兼容地址{" "}
+            <code>dashscope.aliyuncs.com/compatible-mode/v1/chat/completions</code>{" "}
+            调用，与控制台密钥一致。Key 仅存本机，勿提交到 Git。
+          </p>
+          <label className="block">
+            百炼 API Key
+            <input
+              type="password"
+              autoComplete="off"
+              placeholder="sk-…（百炼控制台）"
+              value={options.qwenApiKey}
+              onChange={(e) => patchOptions({ qwenApiKey: e.target.value })}
+            />
+          </label>
+          <div className="qwen-mode-row block">
+            <span className="muted" style={{ display: "block", marginBottom: "0.35rem" }}>
+              高光分析方式
+            </span>
+            <label className="inline-radio">
+              <input
+                type="radio"
+                name="qwen-highlight-mode"
+                checked={options.qwenHighlightMode === "none"}
+                onChange={() => patchOptions({ qwenHighlightMode: "none" })}
+              />{" "}
+              仅本地算法（FFmpeg 运动/音量/镜头）
+            </label>
+            <label className="inline-radio">
+              <input
+                type="radio"
+                name="qwen-highlight-mode"
+                checked={options.qwenHighlightMode === "rerank"}
+                onChange={() => patchOptions({ qwenHighlightMode: "rerank" })}
+              />{" "}
+              算法候选 + 千问文本重排（需文本模型）
+            </label>
+            <label className="inline-radio">
+              <input
+                type="radio"
+                name="qwen-highlight-mode"
+                checked={options.qwenHighlightMode === "transcript"}
+                onChange={() => patchOptions({ qwenHighlightMode: "transcript" })}
+              />{" "}
+              先转字幕再选（分块听写 + 文本模型选段；最多约前 14 分钟，失败则回退算法）
+            </label>
+            <label className="inline-radio">
+              <input
+                type="radio"
+                name="qwen-highlight-mode"
+                checked={options.qwenHighlightMode === "audio"}
+                onChange={() => patchOptions({ qwenHighlightMode: "audio" })}
+              />{" "}
+              千问听音直出（多模态；仅分析片头约 2 分钟音频，失败则回退算法）
+            </label>
+          </div>
+          <label className="block">
+            文本模型（用于「重排」与「字幕再选」选段）
+            <input
+              type="text"
+              placeholder="qwen3.6-plus"
+              value={options.qwenModel}
+              onChange={(e) => patchOptions({ qwenModel: e.target.value })}
+              disabled={
+                options.qwenHighlightMode !== "rerank" &&
+                options.qwenHighlightMode !== "transcript"
+              }
+            />
+          </label>
+          <label className="block">
+            听音多模态模型（用于「直出」与「字幕再选」转写）
+            <input
+              type="text"
+              placeholder="qwen3-omni-flash"
+              value={options.qwenAudioModel}
+              onChange={(e) => patchOptions({ qwenAudioModel: e.target.value })}
+              disabled={
+                options.qwenHighlightMode !== "audio" &&
+                options.qwenHighlightMode !== "transcript"
+              }
+            />
+          </label>
+          <label className="block">
+            偏好说明（可选，重排、听音与字幕模式均会参考）
+            <input
+              type="text"
+              placeholder="例如：优先节奏快、少废话的片段"
+              value={options.qwenInstruction}
+              onChange={(e) => patchOptions({ qwenInstruction: e.target.value })}
             />
           </label>
           <button type="button" onClick={() => void onSaveSettings()}>
